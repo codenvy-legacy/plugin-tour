@@ -73,7 +73,7 @@ Example in a factory JSON:
                 "java"
             ],
             "codenvyGuidedTour": [
-                "https://gist.githubusercontent.com/benoitf/fd6877ecca8651ef0e64/raw/3ef3abcbd9199511fb458ba5937e89570d0d5768/gistfile1.json"
+                "https://gist.githubusercontent.com/benoitf/.....tour.json"
             ]
         }
     },
