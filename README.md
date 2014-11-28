@@ -4,14 +4,35 @@ plugin-tour
 guided tour plugin for the on boarding flow
 
 Two options for enabling the GuidedTour
+
 1. CodenvyGuidedTour.json at the root of the project
+
 2. Insert link of the Codenvy tour JSON file inside the factory
+
+
+Options:
+* title: Title of the step
+
+* content: HTML code that will be displayed as content of the step
+
+* element: dom element that should be checked
+
+* placement: It could be LEFT, RIGHT, TOP, BOTTOM
+
+* xOffset: shift the arrow from the given offset
+
+* actions: actions executed after the step: action|openfile
+
+  * "action runApp" (runApp or any other IDE action)
+
+  * "openfile /path" 
+  
+
 
 
 Here is an example of CodenvyGuidedTour.json JSON file
 ```json
 {
-  "debugMode": true,
   "steps": [
         {
           "title": "Run the app",
