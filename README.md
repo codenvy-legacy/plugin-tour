@@ -1,7 +1,10 @@
 plugin-tour
 ===========
 
-guided tour plugin for the on boarding flow
+![Example](https://raw.githubusercontent.com/benoitf/tour-resources/master/example.png "Example")
+
+
+Guided Tour Plugin for the on boarding flow
 
 Two options for enabling the GuidedTour
 
