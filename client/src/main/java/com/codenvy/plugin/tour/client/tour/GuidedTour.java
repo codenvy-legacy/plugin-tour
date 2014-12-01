@@ -12,9 +12,10 @@
 package com.codenvy.plugin.tour.client.tour;
 
 import com.codenvy.ide.dto.DtoFactory;
-import com.codenvy.plugin.tour.client.lifecycle.GuidedTourLifeCycle;
 import com.codenvy.plugin.tour.client.action.ExternalAction;
 import com.codenvy.plugin.tour.client.hopscotch.HopscotchTour;
+import com.codenvy.plugin.tour.client.html.CustomImage;
+import com.codenvy.plugin.tour.client.lifecycle.GuidedTourLifeCycle;
 import com.codenvy.plugin.tour.client.log.Log;
 import com.codenvy.plugin.tour.dto.GuidedTourAction;
 import com.codenvy.plugin.tour.dto.GuidedTourConfiguration;
@@ -26,6 +27,7 @@ import com.eemi.gwt.tour.client.TourStep;
 import com.eemi.gwt.tour.client.jso.Function;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -67,6 +69,12 @@ public class GuidedTour {
      */
     @Inject
     private HopscotchTour hopscotchTour;
+
+    /**
+     * Allow to inject images
+     */
+    @Inject
+    private CustomImage customImage;
 
     /**
      * Instance of the tour that may be displayed when the project is opened.
@@ -198,8 +206,8 @@ public class GuidedTour {
 
             // build new step
             TourStep tourStep = new TourStep(placement, elementToCheck);
-            tourStep.setTitle(guidedTourStep.getTitle());
-            tourStep.setContent(guidedTourStep.getContent());
+            tourStep.setTitle(customImage.addImages(SimpleHtmlSanitizer.sanitizeHtml(guidedTourStep.getTitle()).asString()));
+            tourStep.setContent(customImage.addImages(SimpleHtmlSanitizer.sanitizeHtml(guidedTourStep.getContent()).asString()));
             if (guidedTourStep.getXOffset() != null) {
                 tourStep.setXOffset(Integer.parseInt(guidedTourStep.getXOffset()));
             }
