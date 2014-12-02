@@ -14,9 +14,12 @@ Two options for enabling the GuidedTour
 
 
 Options:
-* title: Title of the step
+* title: Title of the step (HTML with limited content : only "b", "em", "i", "h1", "h2", "h3", "h4", "h5", "h6", "hr","ul","ol", "li")
 
-* content: HTML code that will be displayed as content of the step
+* content: HTML code that will be displayed as content of the step (HTML with limited content : only "b", "em", "i", "h1","h2", "h3", "h4", "h5", "h6", "hr", "ul", "ol", "li". For inserting image the following syntax is allowed
+```
+![alt name](URL of image) or ![alt name](URL of image = WIDTHxHEIGHT) (HEIGHT being optional)
+```
 
 * element: dom element that should be checked
 
@@ -39,7 +42,7 @@ Here is an example of CodenvyGuidedTour.json JSON file
   "steps": [
         {
           "title": "Run the app",
-          "content": "A Docker microservice is launched, dependencies are auto-installed and the project is executed. Create                    custom environments through Docker recipes.<img width='50'src='http://spring.io/img/spring-by-pivotal.png'>",
+          "content": "A Docker microservice is launched, dependencies are auto-installed and the project is executed. Create custom environments through Docker recipes.![](http://spring.io/img/spring-by-pivotal.png = 50x)",
           "element": "gwt-debug-MainToolbar/runApp-true",
           "placement": "BOTTOM",
           "xOffset": "-20",
@@ -51,7 +54,7 @@ Here is an example of CodenvyGuidedTour.json JSON file
         },
         {
           "title": "Use the app",
-          "content": "The appâ€™s URL will appear in the Runner panel, click to open your app in another tab.",
+          "content": "The application URL will appear in the Runner panel, click to open your app in another tab.",
           "element": "gwt-debug-Application",
           "placement": "TOP",
           "xOffset": "100"
@@ -59,7 +62,7 @@ Here is an example of CodenvyGuidedTour.json JSON file
           {
           "title": "Stop the app",
           "content": "Stop the application when you're done",
-          "element": "gwt-debug-MainToolbar/shutdownApp-false",
+          "element": "gwt-debug-MainToolbar/shutdownApp-true",
           "placement": "TOP",
           "xOffset": "-20"
           },
