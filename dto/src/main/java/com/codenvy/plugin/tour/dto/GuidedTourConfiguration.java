@@ -22,15 +22,58 @@ import java.util.List;
 @DTO
 public interface GuidedTourConfiguration {
 
+    /**
+     * @return the name
+     */
+    String getName();
+
+    /**
+     * Defines the name of the tour
+     * @param name the name of the tour
+     */
+    void setName(String name);
+
+    /**
+     * Defines the name of the tour
+     * @param name the name of the tour
+     * @return this
+     */
+    GuidedTourConfiguration withName(final String name);
+
+    /**
+     * @return true if we have to use debug when the tour is running. With <em>false</em> no debug data will be printed
+     */
     boolean getDebugMode();
 
+    /**
+     * Sets the debug mode parameter
+     * @param debugMode false/true. If true, logs will be printed in the javascript console
+     */
     void setDebugMode(final boolean debugMode);
 
+    /**
+     * Sets the debug mode parameter
+     * @param debugMode false/true. If true, logs will be printed in the javascript console
+     * @return this
+     */
     GuidedTourConfiguration withDebugMode(final boolean debugMode);
 
-
+    /**
+     * @return the steps of this Guided tour
+     */
     List<GuidedTourStep> getSteps();
+
+    /**
+     * Define the steps of this Guided Tour
+     * @param steps the steps that will be showed on the tour
+     */
     void setSteps(List<GuidedTourStep> steps);
+
+    /**
+     * Define the steps of this Guided Tour
+     * @param steps the steps that will be showed on the tour
+     * @return this
+     */
     GuidedTourConfiguration withSteps(List<GuidedTourStep> steps);
 
 
