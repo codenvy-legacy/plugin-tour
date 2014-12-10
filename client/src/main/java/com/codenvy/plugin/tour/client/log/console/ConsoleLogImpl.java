@@ -14,16 +14,19 @@ import com.codenvy.plugin.tour.client.TourExtension;
 import com.codenvy.plugin.tour.client.log.Log;
 
 /**
+ * Implementation of a simple logger that can be turned off/on
  * @author Florent Benoit
  */
 public class ConsoleLogImpl implements Log {
 
+    /**
+     * Debug mode enabled or disabled.
+     */
     private boolean debugMode;
 
     /**
      * Toggle to debug mode
-     *
-     * @param debugMode
+     * @param debugMode true/false
      */
     @Override
     public void setDebugMode(boolean debugMode) {
@@ -32,6 +35,8 @@ public class ConsoleLogImpl implements Log {
 
     /**
      * Debug the given message with args
+     * @param  message the text to display
+     * @param args the optional arguments
      */
     public void debug(String message, Object... args) {
         if (debugMode) {
@@ -41,6 +46,8 @@ public class ConsoleLogImpl implements Log {
 
     /**
      * Display into Javascript console some message
+     * @param  message the text to display
+     * @param args the optional arguments
      */
     public void info(String message, Object... args) {
         com.codenvy.ide.util.loging.Log.info(TourExtension.class, message);
@@ -49,6 +56,8 @@ public class ConsoleLogImpl implements Log {
 
     /**
      * Format the given pattern and args like MessageFormat in JDK (but in GWT there)
+     * @param  pattern the pattern to use
+     * @param arguments the optional arguments
      */
     public static String format(String pattern, Object... arguments) {
         // A very simple implementation of format

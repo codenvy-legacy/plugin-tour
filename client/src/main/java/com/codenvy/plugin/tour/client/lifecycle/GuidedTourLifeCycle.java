@@ -12,7 +12,7 @@
 package com.codenvy.plugin.tour.client.lifecycle;
 
 /**
- * Notify clients about uided tour lifecycle
+ * Notify clients about Guided tour lifecycle
  * @author Florent Benoit
  */
 public interface GuidedTourLifeCycle {

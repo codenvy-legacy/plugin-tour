@@ -19,14 +19,38 @@ import com.eemi.gwt.tour.client.Tour;
  */
 public interface HopscotchTour {
 
+    /**
+     * @return the current tour
+     */
     Tour getCurrentTour();
 
+    /**
+     * Initialize the tour.
+     */
     void init();
 
+    /**
+     * @return the current step number
+     */
     int getCurrentStepNum();
 
+    /**
+     * Starts the given tour with the given step number
+     * @param tour the tour describing all the steps
+     * @param currentStep the number of the step to execute
+     */
     void startTour(Tour tour, int currentStep);
 
+
+    /**
+     * Starts the given tour with the given step number
+     * @param tour the tour describing all the steps
+     */
     void startTour(Tour tour);
+
+    /**
+     * Ends the current tour (if any)
+     */
+    void endTour();
 
 }

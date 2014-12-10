@@ -25,7 +25,6 @@ import javax.inject.Singleton;
 
 /**
  * Gin Module for injection of Guided Tour plugin.
- * 
  * @author Florent Benoit
  */
 @ExtensionGinModule
@@ -35,12 +34,15 @@ public class GuidedTourModule extends AbstractGinModule {
     @Override
     protected void configure() {
 
+        // bind logger
         bind(Log.class).to(ConsoleLogImpl.class).in(Singleton.class);
 
+        // bind all actions available
         GinMultibinder<ExternalAction> actions = GinMultibinder.newSetBinder(binder(), ExternalAction.class);
         actions.addBinding().to(OpenFileExternalAction.class);
         actions.addBinding().to(ActionManagerExternalAction.class);
 
+        // bind hopscotch
         bind(HopscotchTour.class).to(HopscotchTourImpl.class).in(Singleton.class);
 
 

@@ -57,7 +57,6 @@ public class TourExtension implements GuidedTourLifeCycle {
     @Inject
     private AppContext appContext;
 
-
     /**
      * Notification Manager used to send events in order to notify the user.
      */
@@ -96,7 +95,7 @@ public class TourExtension implements GuidedTourLifeCycle {
     @Inject
     public TourExtension(EventBus eventBus) {
 
-        // Install Bower dependencies when projects is being opened and that there is no app/bower_components
+        // Initialize the tour when project is opened
         eventBus.addHandler(ProjectActionEvent.TYPE, new ProjectActionHandler() {
             @Override
             public void onProjectOpened(ProjectActionEvent event) {
@@ -114,9 +113,7 @@ public class TourExtension implements GuidedTourLifeCycle {
 
     /**
      * Initialize the tour by removing any previous tour
-     *
-     * @param event
-     *         the loading event
+     * @param event the loading event
      */
     protected void initTour(ProjectActionEvent event) {
 
@@ -127,9 +124,7 @@ public class TourExtension implements GuidedTourLifeCycle {
 
     /**
      * Download and parse the given URL
-     *
-     * @param url
-     *         the URL containing JSON file to be analyzed
+     * @param url the URL containing JSON file to be analyzed
      */
     protected void remoteFetch(String url) {
         RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, url);
@@ -144,9 +139,7 @@ public class TourExtension implements GuidedTourLifeCycle {
 
     /**
      * Load the data for the given project by picking up the attributes or checking for a given file in the project.
-     *
-     * @param event
-     *         the load event
+     * @param event the load event
      */
     protected void loadData(ProjectActionEvent event) {
 
@@ -192,9 +185,7 @@ public class TourExtension implements GuidedTourLifeCycle {
 
     /**
      * Loads the given JSON data
-     *
-     * @param json
-     *         the JSON data
+     * @param json the JSON data
      */
     protected void loadJsonData(String json) {
 
@@ -217,17 +208,31 @@ public class TourExtension implements GuidedTourLifeCycle {
         repeatingTimer.cancel();
     }
 
+    /**
+     * Timer used to run check tour operation
+     */
     private static class CheckTourTimer extends Timer {
+
+        /**
+         * Guided tour.
+         */
         private final GuidedTour guidedTour;
 
+        /**
+         * Build instance of timer around the given tour
+         * @param guidedTour the guided tour to use
+         */
         public CheckTourTimer(GuidedTour guidedTour) {
             this.guidedTour = guidedTour;
         }
 
+        /**
+         * Checks the tour ech time it is invoked
+         */
         @Override
-    public void run() {
-        guidedTour.checkTour();
-    }
+        public void run() {
+            guidedTour.checkTour();
+        }
     }
 
 
@@ -247,7 +252,10 @@ public class TourExtension implements GuidedTourLifeCycle {
         }
     }
 
-
+    /**
+     * When guided tour is injected, register callbacks and timer on it
+     * @param guidedTour the instance of the tour
+     */
     @Inject
     public void setGuidedTour(final GuidedTour guidedTour) {
         this.guidedTour = guidedTour;

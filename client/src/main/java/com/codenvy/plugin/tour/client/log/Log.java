@@ -19,16 +19,21 @@ public interface Log {
 
     /**
      * Toggle to debug mode
+     * @param debugMode true/false
      */
     void setDebugMode(boolean debugMode);
 
     /**
      * Debug the given message with args
+     * @param  message the text to display
+     * @param args the optional arguments
      */
     void debug(String message, Object... args);
 
     /**
      * Display into Javascript console some message
+     * @param  message the text to display
+     * @param args the optional arguments
      */
     void info(String message, Object... args);
 

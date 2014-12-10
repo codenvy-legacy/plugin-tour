@@ -26,15 +26,27 @@ import javax.inject.Inject;
  */
 public class ActionManagerExternalAction implements ExternalAction {
 
+    /**
+     * Action manager used to check and execute actions
+     */
     @Inject
     private ActionManager actionManager;
 
 
+    /**
+     * Accepts only "action" category
+     * @param category which should be "action" to be accepted
+     * @return true if category is action
+     */
     @Override
     public boolean accept(String category) {
         return "action".equals(category);
     }
 
+    /**
+     * Executes the given actionID on ActionManager
+     * @param actionId the id of action
+     */
     @Override
     public void execute(@Nonnull String actionId) {
         Action action = actionManager.getAction(actionId);

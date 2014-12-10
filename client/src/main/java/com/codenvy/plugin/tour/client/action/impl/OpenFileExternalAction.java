@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.tour.client.action.impl;
 
-import com.codenvy.api.project.gwt.client.ProjectServiceClient;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.editor.EditorAgent;
@@ -26,6 +25,7 @@ import com.google.inject.Inject;
 import static com.codenvy.ide.api.notification.Notification.Type.WARNING;
 
 /**
+ * Action for opening a file.
  * @author Florent Benoit
  */
 public class OpenFileExternalAction implements ExternalAction {
@@ -49,17 +49,16 @@ public class OpenFileExternalAction implements ExternalAction {
     private EditorAgent editorAgent;
 
     /**
-     * Project API client used to get file content.
-     */
-    @Inject
-    private ProjectServiceClient projectServiceClient;
-
-    /**
      * Application context.
      */
     @Inject
     private AppContext appContext;
 
+    /**
+     * Accept the category that is "openfile"
+     * @param category that should match "openfile" for this action
+     * @return true if "openfile" was given as category
+     */
     @Override
     public boolean accept(String category) {
         return "openfile".equals(category);
@@ -67,9 +66,7 @@ public class OpenFileExternalAction implements ExternalAction {
 
     /**
      * Open a file for the current given path.
-     *
-     * @param filePath
-     *         the file path
+     * @param filePath the file path
      */
     @Override
     public void execute(String filePath) {
