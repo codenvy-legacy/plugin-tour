@@ -11,6 +11,7 @@
 
 package com.codenvy.plugin.tour.client.tour;
 
+import com.codenvy.api.analytics.client.logger.AnalyticsEventLogger;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.plugin.tour.client.action.ExternalAction;
 import com.codenvy.plugin.tour.client.hopscotch.HopscotchTour;
@@ -31,8 +32,10 @@ import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -77,6 +80,12 @@ public class GuidedTour {
     private CustomImage customImage;
 
     /**
+     * Analytics
+     */
+    @Inject
+    private AnalyticsEventLogger analyticsEventLogger;
+
+    /**
      * Instance of the tour that may be displayed when the project is opened.
      */
     private Tour tour;
@@ -101,6 +110,10 @@ public class GuidedTour {
      */
     private List<GuidedTourStep> guidedTourSteps;
 
+    /**
+     * Name of this guided tour
+     */
+    private String tourName;
 
     /**
      * Default constructor.
@@ -129,14 +142,17 @@ public class GuidedTour {
         GwtTour.startTour(tour);
         inProgress = true;
 
+        // send start event
+        Map<String, String> data = new HashMap<>();
+        data.put("name", tourName);
+        analyticsEventLogger.log(GuidedTour.class, "start", data);
+
     }
 
 
     /**
      * Loads the given JSON data and start the tour
-     *
-     * @param json
-     *         the JSON data
+     * @param json the JSON data
      */
     public void start(String json) {
 
@@ -148,6 +164,11 @@ public class GuidedTour {
 
         log.setDebugMode(configuration.getDebugMode());
         this.guidedTourSteps = configuration.getSteps();
+
+        this.tourName = configuration.getName();
+        if (this.tourName == null || tourName.isEmpty()) {
+            tourName = "unamed";
+        }
 
         // All has been parsed, let's start
         startTour();
@@ -188,7 +209,7 @@ public class GuidedTour {
             return;
         }
 
-        GuidedTourStep guidedTourStep = guidedTourSteps.get(nextStepToCheck);
+        final GuidedTourStep guidedTourStep = guidedTourSteps.get(nextStepToCheck);
 
         String elementToCheckName = guidedTourStep.getElement();
         Element elementToCheck = Document.get().getElementById(elementToCheckName);
@@ -211,7 +232,54 @@ public class GuidedTour {
             if (guidedTourStep.getXOffset() != null) {
                 tourStep.setXOffset(Integer.parseInt(guidedTourStep.getXOffset()));
             }
+            if (guidedTourStep.getYOffset() != null) {
+                tourStep.setYOffset(Integer.parseInt(guidedTourStep.getYOffset()));
+            }
+            if (guidedTourStep.getArrowOffset() != null) {
+                tourStep.setArrowOffset(Integer.parseInt(guidedTourStep.getArrowOffset()));
+            }
             tourStep.setZIndex(Integer.MAX_VALUE);
+
+            // do we display the skip button ?
+            Boolean skip = guidedTourStep.getSkipButton();
+            if (skip == null || skip.booleanValue()) {
+                tourStep.setShowCTAButton(true);
+                String skipLabel = guidedTourStep.getSkipButtonLabel();
+                if (skipLabel == null || skipLabel.isEmpty()) {
+                    skipLabel = "Skip";
+                }
+                tourStep.setCTALabel(skipLabel);
+                // Register skip action
+                tourStep.onCTA(new Function() {
+                    @Override
+                    public void execute() {
+                        tour = null;
+                        log.debug("Tour ended");
+                        hopscotchTour.endTour();
+                        // send skip event
+                        Map<String, String> data = new HashMap<>();
+                        data.put("name", tourName);
+                        data.put("step", String.valueOf(currentStep));
+                        analyticsEventLogger.log(GuidedTour.class, "skip", data);
+
+                    }
+                });
+            }
+
+
+            // width ?
+            String width = guidedTourStep.getWidth();
+            if (width != null && !width.isEmpty()) {
+                try {
+                    int bubbleWidth = Integer.parseInt(width);
+                    tourStep.setWidth(bubbleWidth);
+                } catch(NumberFormatException e) {
+                    // no width
+                }
+            }
+
+            // display the text of the next button
+            tourStep.onShow(new NextFunction(guidedTourStep));
 
             tour.addStep(tourStep);
 
@@ -224,6 +292,13 @@ public class GuidedTour {
                 log.debug("existing tour so start again the tour");
                 hopscotchTour.startTour(tour);
             }
+
+            // send skip event
+            Map<String, String> data = new HashMap<>();
+            data.put("name", tourName);
+            data.put("step", String.valueOf(currentStep));
+            analyticsEventLogger.log(GuidedTour.class, "show", data);
+
             inProgress = true;
 
         } else {
@@ -240,16 +315,52 @@ public class GuidedTour {
         }
     }
 
-
     /**
-     * Callback used when step has been displayed and user clicked on "Done"
+     * Action to perform when next is being displayed
      */
-    private class EndFunction implements Function {
+    private static class NextFunction implements Function {
+        private final GuidedTourStep guidedTourStep;
+
+        public NextFunction(GuidedTourStep guidedTourStep) {
+            this.guidedTourStep = guidedTourStep;
+        }
+
         @Override
         public void execute() {
-            inProgress = false;
+            Element doneButton = Document.get().getElementById("hopscotch-done");
+            if (doneButton != null) {
+                String nextLabel = guidedTourStep.getNextButtonLabel();
+                if (nextLabel == null || nextLabel.isEmpty()) {
+                    nextLabel = "Next";
+                }
+                doneButton.setInnerText(nextLabel);
+            }
 
+        }
+    }
+
+
+    /**
+     * Callback used when step has been displayed and user clicked on "Next"
+     */
+    private class EndFunction implements Function {
+
+        @Override
+        public void execute() {
+            // tour ended
+            if (tour == null) {
+                return;
+            }
+
+            inProgress = false;
             if (!guidedTourSteps.isEmpty() && currentStep < guidedTourSteps.size()) {
+
+                // send next event
+                Map<String, String> data = new HashMap<>();
+                data.put("name", tourName);
+                data.put("step", String.valueOf(currentStep));
+                analyticsEventLogger.log(GuidedTour.class, "next", data);
+
                 GuidedTourStep guidedTourStep = guidedTourSteps.get(currentStep);
                 List<GuidedTourAction> actions = guidedTourStep.getActions();
 
