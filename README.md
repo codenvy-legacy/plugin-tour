@@ -21,11 +21,33 @@ Options:
 ![alt name](URL of image) or ![alt name](URL of image = WIDTHxHEIGHT) (HEIGHT being optional)
 ```
 
+Global parameter:
+
+* name : name of the Guided Tour
+ 
+Parameter for a step:
+
+* title : title of the bubble
+
+* content : Content of the bubble
+
+* nextButtonLabel: Label for the next button
+
+* skipButton: Boolean for specifying if skip button is displayed (default is true)
+
+* skipButtonLabel: Label for the skip button
+
 * element: dom element that should be checked
 
 * placement: It could be LEFT, RIGHT, TOP, BOTTOM
 
 * xOffset: shift the arrow from the given offset
+
+* yOffset: shift the arrow from the given offset
+
+* arrowOffset: shift the arrow from the given offset
+
+* width : width of the bubble
 
 * actions: actions executed after the step: action|openfile
 
