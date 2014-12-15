@@ -37,4 +37,11 @@ public interface Log {
      */
     void info(String message, Object... args);
 
+    /**
+     * Display into Javascript console some message
+     * @param message the text to display
+     * @param args the optional arguments
+     */
+    void error(String message, Object... args);
+
 }

@@ -53,6 +53,15 @@ public class ConsoleLogImpl implements Log {
         com.codenvy.ide.util.loging.Log.info(TourExtension.class, message);
     }
 
+    /**
+     * Display into Javascript console some message
+     * @param  message the text to display
+     * @param args the optional arguments
+     */
+    public void error(String message, Object... args) {
+        com.codenvy.ide.util.loging.Log.info(TourExtension.class, message);
+    }
+
 
     /**
      * Format the given pattern and args like MessageFormat in JDK (but in GWT there)

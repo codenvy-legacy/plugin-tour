@@ -12,6 +12,7 @@ package com.codenvy.plugin.tour.client.inject;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
 import com.codenvy.plugin.tour.client.action.impl.ActionManagerExternalAction;
+import com.codenvy.plugin.tour.client.action.impl.SetActivePanelExternalAction;
 import com.codenvy.plugin.tour.client.log.console.ConsoleLogImpl;
 import com.codenvy.plugin.tour.client.action.ExternalAction;
 import com.codenvy.plugin.tour.client.hopscotch.HopscotchTour;
@@ -41,6 +42,7 @@ public class GuidedTourModule extends AbstractGinModule {
         GinMultibinder<ExternalAction> actions = GinMultibinder.newSetBinder(binder(), ExternalAction.class);
         actions.addBinding().to(OpenFileExternalAction.class);
         actions.addBinding().to(ActionManagerExternalAction.class);
+        actions.addBinding().to(SetActivePanelExternalAction.class);
 
         // bind hopscotch
         bind(HopscotchTour.class).to(HopscotchTourImpl.class).in(Singleton.class);
