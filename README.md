@@ -54,7 +54,9 @@ Parameter for a step:
   * "action runApp" (runApp or any other IDE action)
 
   * "openfile /path" 
-  
+
+  * "opentab tab-identifier.titleOfTheTab"
+   A tab identifier could be NAVIGATION (left of IDE), INFORMATION (bottom of IDE), EDITING (central), TOOLING (right)
 
 
 
