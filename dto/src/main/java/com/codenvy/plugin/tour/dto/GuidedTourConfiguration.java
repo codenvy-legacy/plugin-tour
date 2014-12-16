@@ -76,5 +76,23 @@ public interface GuidedTourConfiguration {
      */
     GuidedTourConfiguration withSteps(List<GuidedTourStep> steps);
 
+    /**
+     * @return true if first step is a welcome step
+     */
+    boolean getHasWelcomeStep();
+
+    /**
+     * Defines if first step is seen as a welcome step
+     * @param hasWelcomeStep true if first step of the tour is a welcome step
+     */
+    void setHasWelcomeStep(boolean hasWelcomeStep);
+
+    /**
+     /**
+     * Defines if first step is seen as a welcome step
+     * @param hasWelcomeStep true if first step of the tour is a welcome step
+     * @return this
+     */
+    GuidedTourConfiguration withHasWelcomeStep(boolean hasWelcomeStep);
 
 }
