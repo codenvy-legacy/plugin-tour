@@ -16,6 +16,7 @@ import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.plugin.tour.client.action.ExternalAction;
 import com.codenvy.plugin.tour.client.hopscotch.HopscotchTour;
 import com.codenvy.plugin.tour.client.html.CustomImage;
+import com.codenvy.plugin.tour.client.html.DomElementHelper;
 import com.codenvy.plugin.tour.client.lifecycle.GuidedTourLifeCycle;
 import com.codenvy.plugin.tour.client.log.Log;
 import com.codenvy.plugin.tour.dto.GuidedTourAction;
@@ -28,6 +29,7 @@ import com.eemi.gwt.tour.client.TourStep;
 import com.eemi.gwt.tour.client.jso.Function;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 
 import javax.inject.Inject;
@@ -116,6 +118,16 @@ public class GuidedTour {
     private String tourName;
 
     /**
+     * DomElement helper
+     */
+    private DomElementHelper domElementHelper;
+
+    /**
+     * Specify that first step is more a welcome step than a step (no arrow, no number)
+     */
+    private boolean hasWelcomeStep;
+
+    /**
      * Default constructor.
      */
     public GuidedTour() {
@@ -132,6 +144,10 @@ public class GuidedTour {
 
         // Load
         hopscotchTour.init();
+
+        if (domElementHelper == null) {
+            domElementHelper = new DomElementHelper();
+        }
 
         // Define the tour!
         this.tour = new Tour("myTour");
@@ -165,10 +181,14 @@ public class GuidedTour {
         log.setDebugMode(configuration.getDebugMode());
         this.guidedTourSteps = configuration.getSteps();
 
+        // name of the tour
         this.tourName = configuration.getName();
         if (this.tourName == null || tourName.isEmpty()) {
             tourName = "unamed";
         }
+
+        // welcome step
+        this.hasWelcomeStep = configuration.getHasWelcomeStep();
 
         // All has been parsed, let's start
         startTour();
@@ -240,6 +260,12 @@ public class GuidedTour {
             }
             tourStep.setZIndex(Integer.MAX_VALUE);
 
+            // hide widgets at welcome step
+            if (hasWelcomeStep && currentStep == 0) {
+                guidedTourStep.setHideArrow(Boolean.TRUE);
+                guidedTourStep.setHideBubbleNumber(Boolean.TRUE);
+            }
+
             // do we display the skip button ?
             Boolean skip = guidedTourStep.getSkipButton();
             if (skip == null || skip.booleanValue()) {
@@ -281,11 +307,29 @@ public class GuidedTour {
             // display the text of the next button
             tourStep.onShow(new NextFunction(guidedTourStep));
 
+            // hide arrow
+            if (guidedTourStep.getHideArrow() != null && guidedTourStep.getHideArrow().booleanValue()) {
+                domElementHelper.getArrowElement().getStyle().setDisplay(Style.Display.NONE);
+            } else {
+                domElementHelper.getArrowElement().getStyle().clearDisplay();
+            }
+
+            // hide bubble number
+            if (guidedTourStep.getHideBubbleNumber() != null && guidedTourStep.getHideBubbleNumber().booleanValue()) {
+                domElementHelper.getBubbleNumberElement().getStyle().setDisplay(Style.Display.NONE);
+                domElementHelper.getContentElement().getStyle().setMarginLeft(15, Style.Unit.PX);
+            } else {
+                domElementHelper.getBubbleNumberElement().getStyle().clearDisplay();
+                domElementHelper.getContentElement().getStyle().clearMarginLeft();
+            }
+
+
             tour.addStep(tourStep);
 
             nextStepToCheck++;
-
-            if (currentTour == null) {
+            if (hasWelcomeStep) {
+                hopscotchTour.startTour(tour, currentStep - 1);
+            } else if (currentTour == null) {
                 log.debug("no current tour, so start from the current step");
                 hopscotchTour.startTour(tour, currentStep);
             } else {
