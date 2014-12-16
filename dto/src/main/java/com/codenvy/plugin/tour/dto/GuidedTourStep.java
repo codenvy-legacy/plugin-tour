@@ -238,4 +238,41 @@ public interface GuidedTourStep {
      */
     GuidedTourStep withActions(List<GuidedTourAction> actions);
 
+    /**
+     * @return true if arrow needs to be hidden
+     */
+    Boolean getHideArrow();
+
+    /**
+     * Hides the arrow
+     * @param hide boolean for hiding or showing the arrow
+     */
+    void setHideArrow(Boolean hide);
+
+    /**
+     * Hides the arrow
+     * @param hide boolean for hiding or showing the arrow
+     * @return this
+     */
+    GuidedTourStep withHideArrow(Boolean hide);
+
+
+    /**
+     * @return true if bubble number needs to be hidden
+     */
+    Boolean getHideBubbleNumber();
+
+    /**
+     * Hides the bubble number
+     * @param hide boolean for hiding or showing the bubble number
+     */
+    void setHideBubbleNumber(Boolean hide);
+
+    /**
+     * Hides the bubble number
+     * @param hide boolean for hiding or showing the bubble number
+     * @return this
+     */
+    GuidedTourStep withHideBubbleNumber(Boolean hide);
+
 }
