@@ -21,4 +21,5 @@ public interface GuidedTourLifeCycle {
      * Called when there is no more steps to be displayed.
      */
     void end();
+
 }

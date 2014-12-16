@@ -21,6 +21,7 @@ import com.codenvy.plugin.tour.client.lifecycle.GuidedTourLifeCycle;
 import com.codenvy.plugin.tour.client.log.Log;
 import com.codenvy.plugin.tour.dto.GuidedTourAction;
 import com.codenvy.plugin.tour.dto.GuidedTourConfiguration;
+import com.codenvy.plugin.tour.dto.GuidedTourImageOverlay;
 import com.codenvy.plugin.tour.dto.GuidedTourStep;
 import com.eemi.gwt.tour.client.GwtTour;
 import com.eemi.gwt.tour.client.Placement;
@@ -30,7 +31,12 @@ import com.eemi.gwt.tour.client.jso.Function;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
+import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.RootPanel;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -128,6 +134,11 @@ public class GuidedTour {
     private boolean hasWelcomeStep;
 
     /**
+     * List of images that may be displayed at a given step.
+     */
+    private List<Image> currentImages;
+
+    /**
      * Default constructor.
      */
     public GuidedTour() {
@@ -135,6 +146,8 @@ public class GuidedTour {
         this.guidedTourSteps = new ArrayList<>();
 
         this.callbacks = new HashSet<>();
+
+        this.currentImages = new ArrayList<>();
     }
 
     /**
@@ -150,7 +163,7 @@ public class GuidedTour {
         }
 
         // Define the tour!
-        this.tour = new Tour("myTour");
+        this.tour = new Tour(tourName);
 
         // listen on end callback
         GwtTour.listen("end", new EndFunction());
@@ -220,12 +233,14 @@ public class GuidedTour {
         }
 
         Tour currentTour = hopscotchTour.getCurrentTour();
+        int currentStepNum = Integer.MAX_VALUE;
         if (currentTour != null) {
             log.debug("Checking tour GwtTour.getCurrStepNum() {0}", hopscotchTour.getCurrentStepNum());
+            currentStepNum = hopscotchTour.getCurrentStepNum();
         }
 
-        if (inProgress && currentTour != null && hopscotchTour.getCurrentStepNum() == currentStep) {
-            log.debug("InProgress and tour != null and current step == step of the tour");
+        if (inProgress && currentStepNum <= currentStep) {
+            log.debug("InProgress and tour != null and currentStepNum <= currentStep");
             return;
         }
 
@@ -288,6 +303,9 @@ public class GuidedTour {
                         data.put("step", String.valueOf(currentStep));
                         analyticsEventLogger.log(GuidedTour.class, "skip", data);
 
+                        // clear any images
+                        clearImages();
+
                     }
                 });
             }
@@ -324,15 +342,34 @@ public class GuidedTour {
             }
 
 
+            // Recreate tour in order to start at correct number
+            if (hasWelcomeStep && currentStep == 1) {
+                this.tour = new Tour(tourName);
+            }
+
             tour.addStep(tourStep);
 
+            // do we have overlays
+            List<GuidedTourImageOverlay> overlays = guidedTourStep.getOverlays();
+            if (overlays != null) {
+                for (GuidedTourImageOverlay imageOverlay : overlays) {
+                    addOverlay(imageOverlay);
+                }
+            }
+
+            log.info("currentStep ==" + currentStep);
             nextStepToCheck++;
-            if (hasWelcomeStep) {
+            if (hasWelcomeStep && currentStep > 0) {
+                log.info("hasWelcomeStep");
+                log.info("hasWelcomeStep starting at " + (currentStep - 1));
                 hopscotchTour.startTour(tour, currentStep - 1);
             } else if (currentTour == null) {
+                log.info("CurrentTOur == null");
                 log.debug("no current tour, so start from the current step");
                 hopscotchTour.startTour(tour, currentStep);
             } else {
+                log.info("else");
+
                 log.debug("existing tour so start again the tour");
                 hopscotchTour.startTour(tour);
             }
@@ -351,13 +388,93 @@ public class GuidedTour {
         }
     }
 
+    /**
+     * Adds the given overlay.
+     * @param overlay the details of the overlay
+     */
+    protected void addOverlay(GuidedTourImageOverlay overlay) {
+
+        // First, check if element is there
+        String elementToCheckName = overlay.getElement();
+        Element elementToCheck = Document.get().getElementById(elementToCheckName);
+        if (elementToCheck == null) {
+            log.error("The element " + elementToCheckName + " does not exist, skipping overlay");
+            return;
+        }
+
+        if (overlay.getUrl() == null) {
+            log.error("No URL given for image URL, skipping overlay");
+            return;
+        }
+
+        int top = elementToCheck.getAbsoluteTop();
+        int left = elementToCheck.getAbsoluteLeft();
+
+        // do we have shift offset ?
+        String xOffsetStr = overlay.getXOffset();
+        if (xOffsetStr != null && !xOffsetStr.isEmpty()) {
+            try {
+                left = left + Integer.parseInt(xOffsetStr);
+            } catch (NumberFormatException e) {
+                log.error("Invalid xOffset" + xOffsetStr);
+            }
+        }
+
+        String yOffsetStr = overlay.getYOffset();
+        if (yOffsetStr != null && !yOffsetStr.isEmpty()) {
+            try {
+                top = top + Integer.parseInt(yOffsetStr);
+            } catch (NumberFormatException e) {
+                log.error("Invalid yOffset" + yOffsetStr);
+            }
+        }
+
+
+        // Create a Image widget
+        final Image image = new Image();
+
+        // Set image URL
+        image.setUrl(UriUtils.sanitizeUri(overlay.getUrl()));
+
+        // absolute position
+        image.getElement().getStyle().setTop(top, Style.Unit.PX);
+        image.getElement().getStyle().setLeft(left, Style.Unit.PX);
+        image.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
+        image.getElement().getStyle().setZIndex(5);
+
+        // add image
+        RootPanel.get().add(image);
+        currentImages.add(image);
+
+
+        // image should disappear on click
+        image.addClickHandler(new RemoveImageClickHandler(image));
+
+    }
+
+    /**
+     * Clear all images that may be displayed now
+     */
+    protected void clearImages() {
+        for (Image image : currentImages) {
+            RootPanel.get().remove(image);
+        }
+        currentImages.clear();
+    }
+
+
+    /**
+     * Callback when tour is being cancelled
+     */
     protected void cancel() {
+        clearImages();
         if (callbacks != null) {
             for (GuidedTourLifeCycle guidedTourLifeCycle : callbacks) {
                 guidedTourLifeCycle.end();
             }
         }
     }
+
 
     /**
      * Action to perform when next is being displayed
@@ -383,6 +500,22 @@ public class GuidedTour {
         }
     }
 
+    /**
+     * Remove the given image from root panel
+     */
+    private static class RemoveImageClickHandler implements ClickHandler {
+        private final Image image;
+
+        public RemoveImageClickHandler(Image image) {
+            this.image = image;
+        }
+
+        @Override
+        public void onClick(ClickEvent event) {
+            RootPanel.get().remove(image);
+        }
+    }
+
 
     /**
      * Callback used when step has been displayed and user clicked on "Next"
@@ -391,6 +524,10 @@ public class GuidedTour {
 
         @Override
         public void execute() {
+            // clear any images
+            clearImages();
+
+
             // tour ended
             if (tour == null) {
                 return;

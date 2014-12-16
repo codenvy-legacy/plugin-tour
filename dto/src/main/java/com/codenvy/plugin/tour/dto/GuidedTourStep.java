@@ -239,6 +239,24 @@ public interface GuidedTourStep {
     GuidedTourStep withActions(List<GuidedTourAction> actions);
 
     /**
+     * @return all the image overlays for this step
+     */
+    List<GuidedTourImageOverlay> getOverlays();
+
+    /**
+     * Defines list of overlays for this step
+     * @param overlays the list of overlays
+     */
+    void setOverlays(List<GuidedTourImageOverlay> overlays);
+
+    /**
+     * Defines list of overlays for this step
+     * @param overlays the list of overlays
+     * @return this
+     */
+    GuidedTourStep withOverlays(List<GuidedTourImageOverlay> overlays);
+
+    /**
      * @return true if arrow needs to be hidden
      */
     Boolean getHideArrow();
