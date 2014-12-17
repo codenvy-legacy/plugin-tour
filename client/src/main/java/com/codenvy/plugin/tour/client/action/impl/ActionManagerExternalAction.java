@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 /**
- * External actions for action manager
+ * External actions for action manager using trigger keyword
  * @author Florent Benoit
  */
 public class ActionManagerExternalAction implements ExternalAction {
@@ -34,13 +34,13 @@ public class ActionManagerExternalAction implements ExternalAction {
 
 
     /**
-     * Accepts only "action" category
-     * @param category which should be "action" to be accepted
-     * @return true if category is action
+     * Accepts only "trigger" category
+     * @param category which should be "trigger" to be accepted
+     * @return true if category is trigger
      */
     @Override
     public boolean accept(String category) {
-        return "action".equals(category);
+        return "trigger".equals(category);
     }
 
     /**
