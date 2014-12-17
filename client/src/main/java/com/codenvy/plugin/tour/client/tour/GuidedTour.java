@@ -17,6 +17,7 @@ import com.codenvy.plugin.tour.client.action.ExternalAction;
 import com.codenvy.plugin.tour.client.hopscotch.HopscotchTour;
 import com.codenvy.plugin.tour.client.html.CustomImage;
 import com.codenvy.plugin.tour.client.html.DomElementHelper;
+import com.codenvy.plugin.tour.client.html.WikiHyperLinks;
 import com.codenvy.plugin.tour.client.lifecycle.GuidedTourLifeCycle;
 import com.codenvy.plugin.tour.client.log.Log;
 import com.codenvy.plugin.tour.dto.GuidedTourAction;
@@ -90,6 +91,12 @@ public class GuidedTour {
      */
     @Inject
     private CustomImage customImage;
+
+    /**
+     * Allow to inject hyperlinks
+     */
+    @Inject
+    private WikiHyperLinks wikiHyperLinks;
 
     /**
      * Analytics
@@ -267,7 +274,7 @@ public class GuidedTour {
             // build new step
             TourStep tourStep = new TourStep(placement, elementToCheck);
             tourStep.setTitle(customImage.addImages(SimpleHtmlSanitizer.sanitizeHtml(guidedTourStep.getTitle()).asString()));
-            String content = customImage.addImages(SimpleHtmlSanitizer.sanitizeHtml(guidedTourStep.getContent()).asString());
+            String content = wikiHyperLinks.addLinks(customImage.addImages(SimpleHtmlSanitizer.sanitizeHtml(guidedTourStep.getContent()).asString()));
             // add return line separator
             content = content.replace("\n", "<br>");
             tourStep.setContent(content);
