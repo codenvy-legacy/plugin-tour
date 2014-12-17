@@ -267,7 +267,10 @@ public class GuidedTour {
             // build new step
             TourStep tourStep = new TourStep(placement, elementToCheck);
             tourStep.setTitle(customImage.addImages(SimpleHtmlSanitizer.sanitizeHtml(guidedTourStep.getTitle()).asString()));
-            tourStep.setContent(customImage.addImages(SimpleHtmlSanitizer.sanitizeHtml(guidedTourStep.getContent()).asString()));
+            String content = customImage.addImages(SimpleHtmlSanitizer.sanitizeHtml(guidedTourStep.getContent()).asString());
+            // add return line separator
+            content = content.replace("\n", "<br>");
+            tourStep.setContent(content);
             if (guidedTourStep.getXOffset() != null) {
                 tourStep.setXOffset(Integer.parseInt(guidedTourStep.getXOffset()));
             }
