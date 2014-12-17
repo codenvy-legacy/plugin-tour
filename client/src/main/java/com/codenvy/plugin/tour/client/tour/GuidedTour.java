@@ -23,6 +23,7 @@ import com.codenvy.plugin.tour.dto.GuidedTourAction;
 import com.codenvy.plugin.tour.dto.GuidedTourConfiguration;
 import com.codenvy.plugin.tour.dto.GuidedTourImageOverlay;
 import com.codenvy.plugin.tour.dto.GuidedTourStep;
+import com.codenvy.plugin.tour.dto.SizeAttribute;
 import com.eemi.gwt.tour.client.GwtTour;
 import com.eemi.gwt.tour.client.Placement;
 import com.eemi.gwt.tour.client.Tour;
@@ -33,10 +34,13 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -134,9 +138,9 @@ public class GuidedTour {
     private boolean hasWelcomeStep;
 
     /**
-     * List of images that may be displayed at a given step.
+     * List of widgets that may be displayed at a given step.
      */
-    private List<Image> currentImages;
+    private List<Widget> currentOverlays;
 
     /**
      * Default constructor.
@@ -147,7 +151,7 @@ public class GuidedTour {
 
         this.callbacks = new HashSet<>();
 
-        this.currentImages = new ArrayList<>();
+        this.currentOverlays = new ArrayList<>();
     }
 
     /**
@@ -394,21 +398,27 @@ public class GuidedTour {
      */
     protected void addOverlay(GuidedTourImageOverlay overlay) {
 
+        int top = 0;
+        int left = 0;
+
         // First, check if element is there
         String elementToCheckName = overlay.getElement();
-        Element elementToCheck = Document.get().getElementById(elementToCheckName);
-        if (elementToCheck == null) {
-            log.error("The element " + elementToCheckName + " does not exist, skipping overlay");
-            return;
-        }
+        if (elementToCheckName != null && !elementToCheckName.isEmpty()) {
+            Element elementToCheck = Document.get().getElementById(elementToCheckName);
+            if (elementToCheck == null) {
+                log.error("The element " + elementToCheckName + " does not exist, skipping overlay");
+                return;
+            }
 
-        if (overlay.getUrl() == null) {
-            log.error("No URL given for image URL, skipping overlay");
-            return;
-        }
+            if (overlay.getUrl() == null) {
+                log.error("No URL given for image URL, skipping overlay");
+                return;
+            }
 
-        int top = elementToCheck.getAbsoluteTop();
-        int left = elementToCheck.getAbsoluteLeft();
+            // add element position
+            top = elementToCheck.getAbsoluteTop();
+            left = elementToCheck.getAbsoluteLeft();
+        }
 
         // do we have shift offset ?
         String xOffsetStr = overlay.getXOffset();
@@ -429,26 +439,81 @@ public class GuidedTour {
             }
         }
 
+        Widget widget;
 
-        // Create a Image widget
-        final Image image = new Image();
+        // Create a Image widget if there is an URL
+        if (overlay.getUrl() != null) {
+            Image image = new Image();
 
-        // Set image URL
-        image.setUrl(UriUtils.sanitizeUri(overlay.getUrl()));
+            // Set image URL
+            image.setUrl(UriUtils.sanitizeUri(overlay.getUrl()));
+            widget = image;
+
+        } else {
+            widget = new HTML();
+        }
+
+        Element widgetElement = widget.getElement();
+
 
         // absolute position
-        image.getElement().getStyle().setTop(top, Style.Unit.PX);
-        image.getElement().getStyle().setLeft(left, Style.Unit.PX);
-        image.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
-        image.getElement().getStyle().setZIndex(5);
+        widgetElement.getStyle().setTop(top, Style.Unit.PX);
+        widgetElement.getStyle().setLeft(left, Style.Unit.PX);
+        widgetElement.getStyle().setPosition(Style.Position.ABSOLUTE);
+
+        // default index
+        int zIndex = 5;
+        String zIndexStr = overlay.getZIndex();
+        if (zIndexStr != null && !zIndexStr.isEmpty()) {
+            try {
+                zIndex = Integer.parseInt(zIndexStr);
+            } catch (NumberFormatException e) {
+                log.error("Invalid zIndex" + zIndexStr);
+            }
+        }
+        widgetElement.getStyle().setZIndex(zIndex);
+
+        // custom width/height ?
+
+        SizeAttribute width = overlay.getWidth();
+        SizeAttribute height = overlay.getHeight();
+        if (width != null) {
+            int value = width.getValue();
+            String unitString = width.getUnit();
+            if ("%".equals(unitString)) {
+                unitString = "PCT";
+            }
+            Style.Unit unit = Style.Unit.valueOf(unitString);
+            widgetElement.getStyle().setWidth(value, unit);
+        }
+        if (height != null) {
+            int value = height.getValue();
+            String unitString = height.getUnit();
+            if ("%".equals(unitString)) {
+                unitString = "PCT";
+            }
+            Style.Unit unit = Style.Unit.valueOf(unitString);
+            widgetElement.getStyle().setHeight(value, unit);
+        }
+
+
+        // background color
+        String bgColor = overlay.getBackgroundColor();
+        if (bgColor != null) {
+            widgetElement.getStyle().setBackgroundColor(bgColor);
+        }
 
         // add image
-        RootPanel.get().add(image);
-        currentImages.add(image);
+        RootPanel.get().add(widget);
+        currentOverlays.add(widget);
+
 
 
         // image should disappear on click
-        image.addClickHandler(new RemoveImageClickHandler(image));
+        if (widget instanceof HasClickHandlers) {
+            HasClickHandlers hasClickHandlers = (HasClickHandlers) widget;
+            hasClickHandlers.addClickHandler(new RemoveWidgetClickHandler(widget));
+        }
 
     }
 
@@ -456,10 +521,10 @@ public class GuidedTour {
      * Clear all images that may be displayed now
      */
     protected void clearImages() {
-        for (Image image : currentImages) {
-            RootPanel.get().remove(image);
+        for (Widget widget : currentOverlays) {
+            RootPanel.get().remove(widget);
         }
-        currentImages.clear();
+        currentOverlays.clear();
     }
 
 
@@ -501,18 +566,18 @@ public class GuidedTour {
     }
 
     /**
-     * Remove the given image from root panel
+     * Remove the given widget from root panel
      */
-    private static class RemoveImageClickHandler implements ClickHandler {
-        private final Image image;
+    private static class RemoveWidgetClickHandler implements ClickHandler {
+        private final Widget widget;
 
-        public RemoveImageClickHandler(Image image) {
-            this.image = image;
+        public RemoveWidgetClickHandler(Widget widget) {
+            this.widget = widget;
         }
 
         @Override
         public void onClick(ClickEvent event) {
-            RootPanel.get().remove(image);
+            RootPanel.get().remove(widget);
         }
     }
 

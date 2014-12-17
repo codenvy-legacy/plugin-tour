@@ -39,7 +39,6 @@ public interface GuidedTourImageOverlay {
      */
     GuidedTourImageOverlay withElement(String element);
 
-
     /**
      * @return URL of the image to be displayed on the overlay
      */
@@ -93,4 +92,78 @@ public interface GuidedTourImageOverlay {
      * @return this
      */
     GuidedTourImageOverlay withYOffset(String yOffset);
+
+    /**
+     * @return Z-index of the overlay
+     */
+    String getZIndex();
+
+    /**
+     * Defines the z-index of the given overlay
+     * @param zIndex the z-index to display the element
+     */
+    void setZIndex(String zIndex);
+
+    /**
+     * Defines the z-index of the given overlay
+     * @param zIndex the z-index to display the element
+     * @return this
+     */
+    GuidedTourImageOverlay withZIndex(String zIndex);
+
+    /**
+     * @return Width attributes
+     */
+    SizeAttribute getWidth();
+
+    /**
+     * Defines the width attributes
+     * @param widthAttributes attributes with value/unit
+     */
+    void setWidth(SizeAttribute widthAttributes);
+
+    /**
+     * Defines the width attributes
+     * @param widthAttributes attributes with value/unit
+     * @return this
+     */
+    GuidedTourImageOverlay withWidth(SizeAttribute widthAttributes);
+
+    /**
+     * @return Height attributes
+     */
+    SizeAttribute getHeight();
+
+    /**
+     * Defines the height attributes
+     * @param heightAttributes attributes with value/unit
+     */
+    void setHeight(SizeAttribute heightAttributes);
+
+    /**
+     * Defines the height attributes
+     * @param heightAttributes attributes with value/unit
+     * @return this
+     */
+    GuidedTourImageOverlay withHeight(SizeAttribute heightAttributes);
+
+    /**
+     * @return background color
+     */
+    String getBackgroundColor();
+
+    /**
+     * Defines the background color of this overlay
+     * @param backgroundColor the background color
+     */
+    void setBackgroundColor(String backgroundColor);
+
+    /**
+     * Defines the background color of this overlay
+     * @param backgroundColor the background color
+     * @return this
+     */
+    GuidedTourImageOverlay withBackgroundColor(String backgroundColor);
+
+
 }
