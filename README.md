@@ -5,7 +5,7 @@ Guided Tour Plugin
 
 The Guided Tour plugin allows to make some on-boarding flows for projects.
 
-## Setup
+## 1. Setup
 
 ### Factory setup
 Guided Tour is inserted in a factory by using an attribute named 'codenvyGuidedTour'.
@@ -30,7 +30,7 @@ Guided Tour is inserted in a factory by using an attribute named 'codenvyGuidedT
 ### For developing a Guided Tour without factory
 Add CodenvyGuidedTour.json file in the root folder
 
-## Cheat Sheet
+## 2. Cheat Sheet
 
 ### File content
 JSON Codenvy Guided Tour file is composed of root attributes which are
@@ -113,6 +113,8 @@ JSON Codenvy Guided Tour file is composed of root attributes which are
 
 * backgroundColor (String) (optional) Defines the background color to set for the given overlay
 
+
+## 3. Example
 
 Here is an example of CodenvyGuidedTour.json JSON file
 ```json
