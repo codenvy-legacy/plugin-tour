@@ -1,25 +1,65 @@
-plugin-tour
-===========
+Guided Tour Plugin
+==================
 
 ![Example](https://raw.githubusercontent.com/benoitf/tour-resources/master/example.png "Example")
 
+The Guided Tour plugin allows to make some on-boarding flows for projects.
 
-Guided Tour Plugin for the on boarding flow
+## Setup
 
-Two options for enabling the GuidedTour
+### Factory setup
+Guided Tour is inserted in a factory by using an attribute named 'codenvyGuidedTour'.
 
-1. CodenvyGuidedTour.json at the root of the project
-
-2. Insert link of the Codenvy tour JSON file inside the factory
-
-
-Options:
-* title: Title of the step (HTML with limited content : only "b", "em", "i", "h1", "h2", "h3", "h4", "h5", "h6", "hr","ul","ol", "li")
-
-* content: HTML code that will be displayed as content of the step (HTML with limited content : only "b", "em", "i", "h1","h2", "h3", "h4", "h5", "h6", "hr", "ul", "ol", "li". For inserting image the following syntax is allowed
+```json
+{
+    "v": "2.0",
+    "project": {
+        ...
+        "attributes": {
+            "language": [
+                "java"
+            ],
+            "codenvyGuidedTour": [
+                "https://gist.githubusercontent.com/benoitf/.....guidedtour.json"
+            ]
+        }
+    },
+    ...
+}
 ```
-![alt name](URL of image) or ![alt name](URL of image = WIDTHxHEIGHT) (HEIGHT being optional)
+### For developing a Guided Tour without factory
+Add CodenvyGuidedTour.json file in the root folder
+
+## Cheat Sheet
+
+### File content
+JSON Codenvy Guided Tour file is composed of root attributes which are
+```json
+{
+"name": "Name of the tour",
+"hasWelcomeStep" : boolean,
+"steps" : [
+    ...All the steps that are in a file
+    ]
+}
 ```
+#### Root attributes
+
+* 'name' (String): Defines the name of the Guided Tour
+
+* 'hasWelcomeStep' (boolean): if this optional attribute is there, the first step of the Guided Tour will be unnumbered and without any arrows. Following steps will start numbering at 1
+
+* 'steps' (composite): Defines all the steps and their settings that will be displayed
+
+### Step attributes
+
+* title (String) (mandatory): Title of the step (HTML with limited content : only "b", "em", "i", "h1", "h2", "h3", "h4", "h5", "h6", "hr","ul","ol", "li")
+
+* content (String) (mandatory): HTML code that will be displayed as content of the step (HTML with limited content : only "b", "em", "i", "h1","h2", "h3", "h4", "h5", "h6", "hr", "ul", "ol", "li".
+  * For inserting image the following syntax is allowed ```![alt name](URL of image) or ![alt name](URL of image = WIDTHxHEIGHT) (HEIGHT being optional)```
+  * For inserting links, the wiki hyperlink syntax ``` [http://www.codenvy.com] or [http://www.codenvy.com A title for this link] can be used```
+
+* element (String) (mandatory): HTML dom element that should be checked (example: <em>gwt-debug-MainToolbar/runApp-true</em>)
 
 Global parameter:
 
@@ -113,21 +153,3 @@ Here is an example of CodenvyGuidedTour.json JSON file
 ```
 
 
-Example in a factory JSON:
-```json
-{
-    "v": "2.0",
-    "project": {
-        ...
-        "attributes": {
-            "language": [
-                "java"
-            ],
-            "codenvyGuidedTour": [
-                "https://gist.githubusercontent.com/benoitf/.....tour.json"
-            ]
-        }
-    },
-    ...
-}
-```
