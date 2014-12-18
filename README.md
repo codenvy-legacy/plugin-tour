@@ -87,14 +87,14 @@ JSON Codenvy Guided Tour file is composed of root attributes which are
 
 ### actions attributes
 
-  * "trigger <IDE action>" IDE action is for example : <em>runApp</em>
+  * "trigger &lt;IDE action&gt;" IDE action is for example : <em>runApp</em>
 
-  * "openfile <path to the file>" 
+  * "openfile &lt;path to the file&gt;" 
 
   * "opentab tab-identifier.titleOfTheTab"
    A tab identifier could be NAVIGATION (left of IDE), INFORMATION (bottom of IDE), EDITING (central), TOOLING (right)
 
-  * "openurl <url link>" 
+  * "openurl &lt;url link&gt;" 
 
 ### overlays attributes
 * element (String) (optional) If the overlay needs to be positionned from this given element
