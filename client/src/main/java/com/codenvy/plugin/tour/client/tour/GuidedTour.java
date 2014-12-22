@@ -371,18 +371,18 @@ public class GuidedTour {
                 }
             }
 
-            log.info("currentStep ==" + currentStep);
+            log.debug("currentStep ==" + currentStep);
             nextStepToCheck++;
             if (hasWelcomeStep && currentStep > 0) {
-                log.info("hasWelcomeStep");
-                log.info("hasWelcomeStep starting at " + (currentStep - 1));
+                log.debug("hasWelcomeStep");
+                log.debug("hasWelcomeStep starting at " + (currentStep - 1));
                 hopscotchTour.startTour(tour, currentStep - 1);
             } else if (currentTour == null) {
-                log.info("CurrentTOur == null");
+                log.debug("CurrentTOur == null");
                 log.debug("no current tour, so start from the current step");
                 hopscotchTour.startTour(tour, currentStep);
             } else {
-                log.info("else");
+                log.debug("else");
 
                 log.debug("existing tour so start again the tour");
                 hopscotchTour.startTour(tour);
