@@ -40,6 +40,7 @@
     </developers>
     <modules>
         <module>hopscotch</module>
+        <module>project-type</module>
         <module>dto</module>
         <module>dto-gen</module>
         <module>client</module>
