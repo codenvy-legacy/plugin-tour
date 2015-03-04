@@ -16,7 +16,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 
 /**
- * The contribution project type module bindings.
+ * The plugin tour project type module bindings.
  *
  * @author vetal
  */

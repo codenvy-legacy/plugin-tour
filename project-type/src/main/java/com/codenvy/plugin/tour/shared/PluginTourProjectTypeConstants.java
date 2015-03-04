@@ -11,9 +11,9 @@
 package com.codenvy.plugin.tour.shared;
 
 /**
- * Shared constants for the contribution project type.
+ * Shared constants for the plugin tour project type.
  *
- * @author Kevin Pollet
+ * @author vetal
  */
 public final class PluginTourProjectTypeConstants {
     public static final String PLUGIN_TOUR_PROJECT_TYPE_ID = "guidedtour";
