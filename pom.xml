@@ -43,6 +43,7 @@
         <module>dto</module>
         <module>dto-gen</module>
         <module>client</module>
+        <module>server</module>
     </modules>
     <scm>
         <connection>scm:git:git@github.com:codenvy/plugin-tour.git</connection>
