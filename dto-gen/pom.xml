@@ -106,10 +106,10 @@
                         </goals>
                         <configuration>
                             <dtoPackages>
-                                <package>com.codenvy.plugin.tour.dto</package>
+                                <package>org.eclipse.che.plugin.tour.dto</package>
                             </dtoPackages>
                             <outputDirectory>${dto-generator-out-directory}</outputDirectory>
-                            <genClassName>com.codenvy.plugin.tour.dto.client.DtoClientImpls</genClassName>
+                            <genClassName>org.eclipse.che.plugin.tour.dto.client.DtoClientImpls</genClassName>
                             <impl>client</impl>
                         </configuration>
                     </execution>
